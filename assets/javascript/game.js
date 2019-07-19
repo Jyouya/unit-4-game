@@ -45,8 +45,10 @@ function cardListener(event) {
         case 'oponent select':
             if (event.currentTarget.value != main.char) {
                 $(this).detach().removeClass('col-6 col-md-3').appendTo('#defender');
-                $('#message').text('Fight!')
+                $('#message').text('Fight!');
                 main.state = 'combat';
+
+                $('#stage').detach().appendTo('#game');
             }
 
     }
