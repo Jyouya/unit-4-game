@@ -1,0 +1,17 @@
+/* .fighter {
+    width: 20%;
+} */
+
+.fighter img {
+    width: 100%;
+    object-fit: scale-down;
+}
+
+#vs {
+    width: 100%;
+    object-fit: scale-down;
+}
+
+#arena {
+    height: 400px;
+}
