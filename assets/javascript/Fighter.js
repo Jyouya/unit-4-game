@@ -10,17 +10,19 @@ class Fighter {
     }
 
     // Attack a target and level up;
-    attack(target) {
-        this.HP -= target.defend(this, this.attack * this.level);
+    attackTarget(target) {
+        this.HP -= target.defend(this.attack * this.level);
         this.level++;
+        console.log(target.HP <= 0);
+        return target.HP <= 0;
     }
 
     // Process incoming attack and return counter damage if still alive;
-    defend(attacker, damage) {
+    defend(damage) {
         this.HP -= damage;
-        if (HP <= 0) {
+        if (this.HP <= 0) {
             const event = new CustomEvent('dies', { detail: this.name } );
-            Element.dispatchEvent(event);
+            // $('#game').dispatchEvent(event);
             return 0; // no counter attack since we died
         }
         return this.counter; 
