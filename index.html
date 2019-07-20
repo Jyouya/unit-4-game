@@ -8,8 +8,7 @@
     <title>Star Wars RPG</title>
     <!-- Not needed with bootstrap -->
     <!-- <link rel="stylesheet" href="assets/css/reset.css"> -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
@@ -26,10 +25,31 @@
         <div class="row mb-5" id="stage"></div>
         <div class="row mb-2" id="arena">
             <div class="col-md-5" id="your-character"></div>
-            <div class="col-md-2"><img src="assets/images/vs.png" alt="vs" class="align-middle" id="vs"/></div>
+            <div class="col-md-2"><img src="assets/images/vs.png" alt="vs" class="align-middle" id="vs" /></div>
             <div class="col-md-5" id="defender"></div>
         </div>
         <div class="row mt-2"><button type="button" class="btn btn-danger" id="attack">Attack</button></div>
+    </div>
+
+    <div class="battle">
+        <div class="stats enemy">
+            <div class="name">TestName</div>
+            <div class="level">Lv70</div>
+            <div class="hp-label">HP:</div>
+            <div class="hp-bar-inner"></div>
+            <div class="hp-bar-outer"></div>
+            <div class="trim">
+                <div class="arrow-right"></div>
+            </div>
+
+        </div>
+        <div class="sprite enemy">
+        </div>
+        <div class="sprite player">
+
+        </div>
+        <div class="stats player"></div>
+        <div class="battle-menu"></div>
     </div>
 
     <script src="assets/javascript/Fighter.js"></script>

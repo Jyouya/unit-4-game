@@ -15,3 +15,118 @@
 #arena {
     height: 25%;
 }
+
+
+/* Pokemon Battle */
+
+.battle {
+    display: grid;
+    width: 600px;
+    height: 600px;
+    grid-template-rows: 25% 25% 25% 25%;
+    grid-template-columns: 46% 8% 46%;
+}
+
+.stats {
+    grid-column-end: span 2;
+    background: pink;
+    padding-left: 5%;
+    display: grid;
+    grid-template-columns: 10% 15% 75%;
+    grid-template-rows: 20% 20% 20% 20% 20%;
+    font-size: 20px;
+    align-items: center;
+}
+
+.stats.enemy {
+    grid-column-start: 1;
+    grid-row-start: 1;
+}
+
+.stats.player {
+    grid-column-start: 2;
+    grid-row-start: 3;
+}
+
+.sprite {
+    grid-row-end: span 2;
+    grid-column-end: span 1;
+    background: blue;
+}
+
+.sprite.player {
+    grid-column-start: 1;
+    grid-row-start: 2;
+}
+
+.sprite.enemy {
+    grid-column-start: 3;
+    grid-row-start: 1;
+}
+
+.battle-menu {
+    grid-row-start: 4;
+    grid-column-end: span 3;
+    background: green;
+}
+
+.stats .name {
+    grid-row-start: 1;
+    grid-row-end: span 1;
+    grid-column-end: span 3;
+}
+
+.stats .hp-label {
+    grid-column-start: 2;
+    grid-row-start: 3;
+}
+
+.stats.enemy .level {
+    grid-row-start: 2;
+    grid-column-start: 3;
+}
+
+.stats.enemy .trim {
+    grid-row-start: 3;
+    grid-column-start: 1;
+    grid-column-end: span 3;
+    grid-row-end: span 2;
+    position: relative;
+    width: 85%;
+    height: 85%;
+    bottom: 10%;
+    left: 5%;
+    border-left: solid 3px black;
+    border-bottom: solid 3px black;
+}
+
+.stats.enemy .arrow-right {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 0 0 20px;
+    border-color: transparent transparent transparent black;
+    position: absolute;
+    right: -17px;
+    bottom: -3px;
+}
+
+.stats .hp-bar-outer,
+.stats .hp-bar-inner {
+    height: 50%;
+    width: 85%;
+    grid-row-start: 3;
+    grid-column-start: 3;
+    /* I don't know why this hack works to make a pill shape */
+    border-radius: 500px;
+}
+
+.stats .hp-bar-outer {
+    border: solid 3px black;
+}
+
+.stats .hp-bar-inner {
+    border: transparent 3px black;
+    background: green;
+    width: calc(85% * .75);
+}
