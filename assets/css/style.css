@@ -64,10 +64,14 @@
     grid-row-start: 1;
 }
 
-.battle-menu {
+.battle-display {
     grid-row-start: 4;
+    grid-column-start: 1;
     grid-column-end: span 3;
+    border: double 5px black;
     background: green;
+    font-size: 150%;
+    padding: 1.5rem;
 }
 
 .stats .name {
@@ -173,4 +177,42 @@
     position: absolute;
     left: -18px;
     bottom: -3px;
+}
+
+.battle-menu {
+    border: double 5px black;
+    grid-column-start: 2;
+    grid-column-end: span 2;
+    grid-row-start: 4;
+    background: white;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 50% 50%;
+    font-size: 150%;
+}
+
+.battle-menu button {
+    background: white;
+    border: none;
+}
+
+.battle-menu button:focus {
+    outline: none;
+}
+
+.menu-arrow {
+    visibility: hidden;
+    height: 0;
+    width: 0;
+    border-style: solid;
+    border-width: 10px 0 10px 16px;
+    border-color: transparent transparent transparent black;
+    position: relative;
+    top: 30px;
+    left: 10%;
+}
+
+.battle-menu button:hover .menu-arrow {
+    visibility: visible;
 }

@@ -2,7 +2,7 @@ class Fighter {
     constructor(name, health, attack, counter) {
         this.name = name;
         this.maxHP = health,
-        this.attack = attack;
+            this.attack = attack;
         this.counter = counter;
         // Start out at full HP
         this.HP = this.maxHP;
@@ -21,10 +21,14 @@ class Fighter {
     defend(damage) {
         this.HP -= damage;
         if (this.HP <= 0) {
-            const event = new CustomEvent('dies', { detail: this.name } );
+            const event = new CustomEvent('dies', { detail: this.name });
             // $('#game').dispatchEvent(event);
             return 0; // no counter attack since we died
         }
-        return this.counter; 
+        return this.counter;
+    }
+
+    get id() {
+        return this.name.toLowerCase().replace(' ', '-');
     }
 }

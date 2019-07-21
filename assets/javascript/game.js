@@ -27,7 +27,7 @@ const main = {
 
 function makeCard(fighter) {
     console.log(fighter);
-    return $('<div>').addClass('card fighter p-1 col-6 col-md-3').attr('value', fighter.name).attr('id', fighter.name.replace(' ','')).append(
+    return $('<div>').addClass('card fighter p-1 col-6 col-md-3').attr('value', fighter.name).attr('id', fighter.name.replace(' ', '')).append(
         $('<img>').attr('src', `assets/images/${fighter.name}.png`),
         $('<div>').addClass('card-body').append(
             $('<h5>').addClass('card-title').text(fighter.name),
@@ -36,7 +36,7 @@ function makeCard(fighter) {
     );
 }
 
-function cardListener (event) {
+function cardListener(event) {
     switch (main.state) {
         case 'character select':
             // I am completely baffled as to why event.currentTarget.value is undefined;
@@ -61,7 +61,7 @@ function cardListener (event) {
     }
 }
 
-function attack () {
+function attack() {
     if (main.combatants[main.char].attackTarget(main.combatants[main.enemy])) {
         console.log(`${main.enemy} defeated`);
         $(`#${main.enemy.replace(' ','')}`).remove();
@@ -74,8 +74,30 @@ function attack () {
 }
 
 
-$(document).ready(function () {
+$(document).ready(function() {
     main.initialize();
+
+    main.char = main.combatants["Obi Wan"];
+    main.enemy = main.combatants["Darth Maul"];
+
+    displayBuffer = [];
+
+
+    // Battle events
+
+    //TODO add display buffer to queue messages, only display battle menu when all text is displayed
+    $('.battle-display').on('click', function() {
+        $('.battle-display').empty();
+        $('.battle-menu').toggle();
+
+    })
+
+    $('.battle-menu #fight').on('click', function(event) {
+        main.char.attackTarget(main.enemy);
+        $('.battle-display').text(`${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`)
+        $('.stats.player .level').text(`Lv${main.char.level}`);
+        $('.battle-menu').toggle();
+    })
 
 
 
