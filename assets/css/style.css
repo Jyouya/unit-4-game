@@ -133,7 +133,6 @@
 .stats .hp-bar-inner {
     border: transparent 3px black;
     background: green;
-    width: calc(85% * .75);
 }
 
 .stats.player .level {

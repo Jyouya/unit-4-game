@@ -75,10 +75,15 @@ function attack() {
 
 function updateDisplay() {
     if (displayBuffer[0]) {
+        console.log(displayBuffer[0]);
+        const next = displayBuffer.shift();
         $('.battle-menu').hide();
         $('.battle-display').css(
             'cursor', 'pointer').text(
-            displayBuffer.shift()); // Buffer should be no more than a few lines
+            next.text); // Buffer should be no more than a few lines
+        if (next.animation) {
+            next.animation();
+        }
     } else {
         $('.battle-display').css(
             'cursor', 'auto').empty();
@@ -86,8 +91,26 @@ function updateDisplay() {
     }
 }
 
+function updateHpBar(who, pctHP) { //who is 'player' or 'enemy'
+    console.log('HP Bar Animation');
 
-const newLocal = displayBuffer = [];
+    const hpBar = $(`.stats.${who} .hp-bar-inner`)
+
+    if (pctHP >= .50) {
+        hpBar.css('background', 'green');
+    } else if (pctHP >= .25) {
+        hpBar.css('background', 'gold');
+    } else {
+        hpBar.css('background', 'firebrick');
+    }
+    hpBar.animate({
+        'width': pctHP * 85 + "%"
+    }, 700);
+}
+
+
+const displayBuffer = [];
+
 $(document).ready(function() {
     main.initialize();
 
@@ -106,38 +129,50 @@ $(document).ready(function() {
     // Combat logic happens here.
     $('.battle-menu #fight').on('click', function() {
         const res = main.char.attackTarget(main.enemy);
-        displayBuffer.push(`${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`)
+        displayBuffer.push({
+            text: `${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`,
+            // How would I bundle the values for main.enemy.HP with the function rather than references to them?
+            // Function.prototype.apply doesn't seem to do what I would expect.
+            animation: () => updateHpBar('enemy', main.enemy.HP / main.enemy.maxHP)
+        });
         if (res) {
-            displayBuffer.push(`${main.enemy.name} counterattacks for ${res} damage.`);
+            displayBuffer.push({
+                text: `${main.enemy.name} counterattacks for ${res} damage.`,
+                animation: () => {
+                    updateHpBar('player', main.char.HP / main.char.maxHP);
+                    $('.stats.player .hp-value').text(`${main.char.HP > 0 ? main.char.HP : 0} / ${main.char.maxHP}`);
+                }
+            });
             if (main.char.HP <= 0) {
-                displayBuffer.push(`${main.char.name} is defeated.`);
+                displayBuffer.push({ text: `${main.char.name} is defeated.` });
                 //TODO put logic for when player loses here
             }
         } else {
-            displayBuffer.push(`${main.enemy.name} is defeated.`);
+            displayBuffer.push({ text: `${main.enemy.name} is defeated.` });
         }
 
         updateDisplay(); // 
 
         $('.stats.player .level').text(`Lv${main.char.level}`);
-        $('.stats.player .hp-value').text(`${main.char.HP > 0 ? main.char.HP : 0} / ${main.char.maxHP}`);
     });
 
     // Logic for the buttons that don't do anything
     $('.battle-menu #jedi').on('click', function() {
-        displayBuffer.push('You have no other Jedi!');
+        displayBuffer.push({ text: 'You have no other Jedi!' });
         updateDisplay();
     });
 
     $('.battle-menu #item').on('click', function() {
-        displayBuffer.push('Yoda: This isn\'t the time to use that!');
+        displayBuffer.push({ text: 'Yoda: This isn\'t the time to use that!' });
         updateDisplay();
     });
 
     $('.battle-menu #run').on('click', function() {
-        displayBuffer.push('You can\'t run from a Jedi battle!');
+        displayBuffer.push({ text: 'You can\'t run from a Jedi battle!' });
         updateDisplay();
     });
+
+
 
 
 });
