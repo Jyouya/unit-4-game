@@ -32,7 +32,7 @@
     background: pink;
     padding-left: 5%;
     display: grid;
-    grid-template-columns: 10% 15% 75%;
+    grid-template-columns: 10% 15% 25% 50%;
     grid-template-rows: 20% 20% 20% 20% 20%;
     font-size: 20px;
     align-items: center;
@@ -89,7 +89,7 @@
 .stats.enemy .trim {
     grid-row-start: 3;
     grid-column-start: 1;
-    grid-column-end: span 3;
+    grid-column-end: span 4;
     grid-row-end: span 2;
     position: relative;
     width: 85%;
@@ -117,6 +117,7 @@
     width: 85%;
     grid-row-start: 3;
     grid-column-start: 3;
+    grid-column-end: span 2;
     /* I don't know why this hack works to make a pill shape */
     border-radius: 500px;
 }
@@ -129,4 +130,47 @@
     border: transparent 3px black;
     background: green;
     width: calc(85% * .75);
+}
+
+.stats.player .level {
+    grid-column-start: 4;
+}
+
+.stats.player .name {
+    grid-column-start: 2;
+    position: relative;
+    left: 4%;
+}
+
+.stats.player .hp-value {
+    grid-column-start: 3;
+    grid-column-end: span 2;
+    grid-row-start: 4;
+    width: 85%;
+    text-align: center;
+}
+
+.stats.player .trim {
+    grid-row-start: 3;
+    grid-column-start: 1;
+    grid-column-end: span 4;
+    grid-row-end: span 3;
+    position: relative;
+    width: 85%;
+    height: 85%;
+    bottom: 10%;
+    left: 10%;
+    border-right: solid 3px black;
+    border-bottom: solid 3px black;
+}
+
+.stats.player .arrow-left {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 20px 0 0;
+    border-color: transparent black transparent black;
+    position: absolute;
+    left: -18px;
+    bottom: -3px;
 }
