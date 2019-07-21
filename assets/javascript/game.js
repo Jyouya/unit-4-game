@@ -64,41 +64,80 @@ function cardListener(event) {
 function attack() {
     if (main.combatants[main.char].attackTarget(main.combatants[main.enemy])) {
         console.log(`${main.enemy} defeated`);
-        $(`#${main.enemy.replace(' ','')}`).remove();
+        $(`#${main.enemy.replace(' ', '')}`).remove();
         main.state = 'opponent select';
     } else if (main.combatants[main.char].HP <= 0) {
         console.log('You lose');
     }
-    $(`#${main.char.replace(' ','')}>.card-body>.card-text`).text(main.combatants[main.char].HP);
-    $(`#${main.enemy.replace(' ','')}>.card-body>.card-text`).text(main.combatants[main.enemy].HP);
+    $(`#${main.char.replace(' ', '')}>.card-body>.card-text`).text(main.combatants[main.char].HP);
+    $(`#${main.enemy.replace(' ', '')}>.card-body>.card-text`).text(main.combatants[main.enemy].HP);
+}
+
+function updateDisplay() {
+    if (displayBuffer[0]) {
+        $('.battle-menu').hide();
+        $('.battle-display').css(
+            'cursor', 'pointer').text(
+            displayBuffer.shift()); // Buffer should be no more than a few lines
+    } else {
+        $('.battle-display').css(
+            'cursor', 'auto').empty();
+        $('.battle-menu').show();
+    }
 }
 
 
+const newLocal = displayBuffer = [];
 $(document).ready(function() {
     main.initialize();
 
     main.char = main.combatants["Obi Wan"];
     main.enemy = main.combatants["Darth Maul"];
 
-    displayBuffer = [];
 
 
     // Battle events
 
     //TODO add display buffer to queue messages, only display battle menu when all text is displayed
     $('.battle-display').on('click', function() {
-        $('.battle-display').empty();
-        $('.battle-menu').toggle();
-
+        updateDisplay();
     })
 
-    $('.battle-menu #fight').on('click', function(event) {
-        main.char.attackTarget(main.enemy);
-        $('.battle-display').text(`${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`)
+    // Combat logic happens here.
+    $('.battle-menu #fight').on('click', function() {
+        const res = main.char.attackTarget(main.enemy);
+        displayBuffer.push(`${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`)
+        if (res) {
+            displayBuffer.push(`${main.enemy.name} counterattacks for ${res} damage.`);
+            if (main.char.HP <= 0) {
+                displayBuffer.push(`${main.char.name} is defeated.`);
+                //TODO put logic for when player loses here
+            }
+        } else {
+            displayBuffer.push(`${main.enemy.name} is defeated.`);
+        }
+
+        updateDisplay(); // 
+
         $('.stats.player .level').text(`Lv${main.char.level}`);
-        $('.battle-menu').toggle();
-    })
+        $('.stats.player .hp-value').text(`${main.char.HP > 0 ? main.char.HP : 0} / ${main.char.maxHP}`);
+    });
 
+    // Logic for the buttons that don't do anything
+    $('.battle-menu #jedi').on('click', function() {
+        displayBuffer.push('You have no other Jedi!');
+        updateDisplay();
+    });
+
+    $('.battle-menu #item').on('click', function() {
+        displayBuffer.push('Yoda: This isn\'t the time to use that!');
+        updateDisplay();
+    });
+
+    $('.battle-menu #run').on('click', function() {
+        displayBuffer.push('You can\'t run from a Jedi battle!');
+        updateDisplay();
+    });
 
 
 });

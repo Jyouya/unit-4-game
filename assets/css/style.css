@@ -216,3 +216,7 @@
 .battle-menu button:hover .menu-arrow {
     visibility: visible;
 }
+
+.battle-menu {
+    cursor: pointer;
+}
