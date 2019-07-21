@@ -52,6 +52,7 @@
     grid-row-end: span 2;
     grid-column-end: span 1;
     background: blue;
+    position: relative;
 }
 
 .sprite.player {
@@ -222,42 +223,48 @@
     cursor: pointer;
 }
 
-.cut {
-    position: relative;
+.cut,
+.cut-back {
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 250px;
     height: 250px;
+    z-index: 1;
 }
 
-
-/* .cut .line {
-    margin: 0;
-    position: absolute;
-    top: calc(11.015% + 4.5 * .707px);
-    right: calc(11.015% + 4.5 *.707px);
-    width: 0;
-    transform: rotate(-45deg);
-    height: 0;
-    border-top: double 9px black;
-    background: white;
-} */
-
-.cut .path {
+.path {
     position: absolute;
     width: 100%;
     top: 50%;
     right: 0;
     /* border-top: double 9px black; */
-    transform: rotate(-45deg);
     margin: 0;
     height: 9px;
 }
 
-.cut .path>.line {
+.cut .path {
+    transform: rotate(-45deg);
+}
+
+.cut-back .path {
+    transform: rotate(45deg);
+}
+
+.path>.line {
     border-top: double 9px black;
     width: 0%;
     position: absolute;
     right: 0;
     background: white;
+}
+
+.cut .path>.line {
+    right: 0;
+}
+
+.cut-back .path>.line {
+    left: 0;
 }
 
 .star8 {
@@ -267,10 +274,18 @@
     height: 20px;
     position: absolute;
     transform: rotate(45deg);
-    right: 0;
-    top: 0;
     transform: translateX(-25%);
     transform: translateY(-25%);
+}
+
+.cut .star8 {
+    right: 0;
+    top: 0;
+}
+
+.cut-back .star8 {
+    right: calc(100% - 17px);
+    top: 0;
 }
 
 .star8:before {

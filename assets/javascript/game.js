@@ -4,7 +4,7 @@ const main = {
     initialize() {
         this.combatants = { // fill combatants with a fresh array of fighters when we initialize
             "Obi Wan": new Fighter("Obi Wan", 120, 8, 20, cut),
-            "Darth Maul": new Fighter("Darth Maul", 180, 5, 25),
+            "Darth Maul": new Fighter("Darth Maul", 180, 5, 25, doubleCut),
             "Luke Skywalker": new Fighter("Luke Skywalker", 100, 10, 5),
             "Darth Sidious": new Fighter("Darth Sidious", 150, 6, 15)
         };
@@ -121,31 +121,61 @@ function defeatAnimation(who) {
 }
 
 // Cutting animation, takes 'player' or 'enemy' as argument
-function cut(who) {
-    console.log(`.sprite.${who}`);
+function cut(who, blinks) {
     const cut = $('<div class="cut">').append(
         $('<div class="path">').append(
             $('<div class="star8">'),
             $('<div class="line">')
         )).appendTo($(`.sprite.${who}`));
     $('.cut .path>.star8').animate({
-        bottom: '-17',
-        left: '-17',
+        bottom: '-17px',
+        left: '-17px',
         easing: 'linear'
     }, 400);
     $('.cut .path>.line').animate({
         width: '100%',
         easing: 'linear'
     }, 400, function() {
-        blink(who);
+        blink(who, blinks);
         cut.remove();
     });
 }
 
-function blink(who) {
+function doubleCut(who) {
+    const animation = $('<div class="cut-back">').append(
+        $('<div class="path">').append(
+            $('<div class="star8">'),
+            $('<div class="line">')
+        )).appendTo($(`.sprite.${who}`));
+
+    $('.cut-back .path>.star8').animate({
+        right: '-17px',
+        easing: 'linear'
+    }, 400);
+
+    $('.cut-back .path>.line').animate({
+        width: '100%',
+        easing: 'linear',
+    }, 400, function() {
+        animation.remove();
+        cut(who, 2);
+    });
+}
+
+// function blink(who) {
+//     console.log(`blink ${who}`);
+//     const sprite = $(`.sprite.${who} img`);
+//     sprite.fadeOut(200);
+//     sprite.fadeIn(200);
+// }
+
+function blink(who, times) {
     const sprite = $(`.sprite.${who} img`);
-    sprite.fadeOut(200);
-    sprite.fadeIn(200);
+    times = times ? times : 1;
+    while (times--) {
+        sprite.fadeOut(200);
+        sprite.fadeIn(200);
+    }
 }
 
 // $.bez([0.86, 0.01, 0.72, 0.03])
@@ -183,6 +213,7 @@ $(document).ready(function() {
                 text: `${main.enemy.name} counterattacks for ${res} damage.`,
                 animation: () => {
                     updateHpBar('player', main.char.HP / main.char.maxHP);
+                    main.enemy.attackAnimation('player');
                     $('.stats.player .hp-value').text(`${main.char.HP > 0 ? main.char.HP : 0} / ${main.char.maxHP}`);
                 }
             });
