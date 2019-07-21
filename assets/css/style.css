@@ -57,6 +57,7 @@
 .sprite.player {
     grid-column-start: 1;
     grid-row-start: 2;
+    position: relative;
 }
 
 .sprite.enemy {
@@ -72,6 +73,7 @@
     background: green;
     font-size: 150%;
     padding: 1.5rem;
+    z-index: 1;
 }
 
 .stats .name {
@@ -218,4 +220,78 @@
 
 .battle-menu {
     cursor: pointer;
+}
+
+.cut {
+    position: relative;
+    width: 250px;
+    height: 250px;
+}
+
+
+/* .cut .line {
+    margin: 0;
+    position: absolute;
+    top: calc(11.015% + 4.5 * .707px);
+    right: calc(11.015% + 4.5 *.707px);
+    width: 0;
+    transform: rotate(-45deg);
+    height: 0;
+    border-top: double 9px black;
+    background: white;
+} */
+
+.cut .path {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    right: 0;
+    /* border-top: double 9px black; */
+    transform: rotate(-45deg);
+    margin: 0;
+    height: 9px;
+}
+
+.cut .path>.line {
+    border-top: double 9px black;
+    width: 0%;
+    position: absolute;
+    right: 0;
+    background: white;
+}
+
+.star8 {
+    border: 3px solid black;
+    background: white;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    transform: rotate(45deg);
+    right: 0;
+    top: 0;
+    transform: translateX(-25%);
+    transform: translateY(-25%);
+}
+
+.star8:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: white;
+    transform: rotate(135deg);
+}
+
+.star8:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    transform: rotate(135deg);
+    box-shadow: 0 0 0 3px black;
+    mix-blend-mode: overlay;
 }

@@ -3,7 +3,7 @@ let combatants; // Dictionary of combatant names and fighter objects
 const main = {
     initialize() {
         this.combatants = { // fill combatants with a fresh array of fighters when we initialize
-            "Obi Wan": new Fighter("Obi Wan", 120, 8, 20),
+            "Obi Wan": new Fighter("Obi Wan", 120, 8, 20, cut),
             "Darth Maul": new Fighter("Darth Maul", 180, 5, 25),
             "Luke Skywalker": new Fighter("Luke Skywalker", 100, 10, 5),
             "Darth Sidious": new Fighter("Darth Sidious", 150, 6, 15)
@@ -108,7 +108,47 @@ function updateHpBar(who, pctHP) { //who is 'player' or 'enemy'
     }, 700);
 }
 
+function defeatAnimation(who) {
+    console.log(`.sprite.${who} img`);
+    const sprite = $(`.sprite.${who} img`);
+    sprite.animate({
+        'top': '100%',
+        'height': '50%',
+        'easing': jQuery.easing.easeInQuint // from easing library
+    }, 700, function() {
+        sprite.remove();
+    });
+}
 
+// Cutting animation, takes 'player' or 'enemy' as argument
+function cut(who) {
+    console.log(`.sprite.${who}`);
+    const cut = $('<div class="cut">').append(
+        $('<div class="path">').append(
+            $('<div class="star8">'),
+            $('<div class="line">')
+        )).appendTo($(`.sprite.${who}`));
+    $('.cut .path>.star8').animate({
+        bottom: '-17',
+        left: '-17',
+        easing: 'linear'
+    }, 400);
+    $('.cut .path>.line').animate({
+        width: '100%',
+        easing: 'linear'
+    }, 400, function() {
+        blink(who);
+        cut.remove();
+    });
+}
+
+function blink(who) {
+    const sprite = $(`.sprite.${who} img`);
+    sprite.fadeOut(200);
+    sprite.fadeIn(200);
+}
+
+// $.bez([0.86, 0.01, 0.72, 0.03])
 const displayBuffer = [];
 
 $(document).ready(function() {
@@ -133,7 +173,10 @@ $(document).ready(function() {
             text: `${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`,
             // How would I bundle the values for main.enemy.HP with the function rather than references to them?
             // Function.prototype.apply doesn't seem to do what I would expect.
-            animation: () => updateHpBar('enemy', main.enemy.HP / main.enemy.maxHP)
+            animation: () => {
+                updateHpBar('enemy', main.enemy.HP / main.enemy.maxHP);
+                main.char.attackAnimation('enemy');
+            }
         });
         if (res) {
             displayBuffer.push({
@@ -144,7 +187,12 @@ $(document).ready(function() {
                 }
             });
             if (main.char.HP <= 0) {
-                displayBuffer.push({ text: `${main.char.name} is defeated.` });
+                displayBuffer.push({
+                    text: `${main.char.name} is defeated.`,
+                    animation: () => {
+                        defeatAnimation('player');
+                    }
+                });
                 //TODO put logic for when player loses here
             }
         } else {
@@ -172,6 +220,17 @@ $(document).ready(function() {
         updateDisplay();
     });
 
+    $('.cut').on('mouseover', function() {
+        $('.cut .star8').animate({
+            bottom: '-17',
+            left: '-17',
+            easing: 'linear'
+        }, 400);
+        $('.cut .path>.line').animate({
+            width: '100%',
+            easing: 'linear'
+        }, 400);
+    })
 
 
 

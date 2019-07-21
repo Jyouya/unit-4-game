@@ -1,12 +1,13 @@
 class Fighter {
-    constructor(name, health, attack, counter) {
+    constructor(name, health, attack, counter, attackAnimation) {
         this.name = name;
-        this.maxHP = health,
-            this.attack = attack;
+        this.maxHP = health;
+        this.attack = attack;
         this.counter = counter;
         // Start out at full HP
         this.HP = this.maxHP;
         this.level = 1;
+        this.attackAnimation = attackAnimation;
     }
 
     // Attack a target and level up;
