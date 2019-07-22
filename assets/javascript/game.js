@@ -3,9 +3,9 @@ let combatants; // Dictionary of combatant names and fighter objects
 const main = {
     initialize() {
         this.combatants = { // fill combatants with a fresh array of fighters when we initialize
-            "Obi Wan": new Fighter("Obi Wan", 120, 8, 20, cut),
+            "Obi Wan": new Fighter("Obi Wan", 120, 8, 20, thunder),
             "Darth Maul": new Fighter("Darth Maul", 180, 5, 25, doubleCut),
-            "Luke Skywalker": new Fighter("Luke Skywalker", 100, 10, 5),
+            "Luke Skywalker": new Fighter("Luke Skywalker", 100, 10, 5, cut),
             "Darth Sidious": new Fighter("Darth Sidious", 150, 6, 15)
         };
         this.state = 'character select';
@@ -23,7 +23,6 @@ const main = {
     },
     char: '',
 };
-
 
 function makeCard(fighter) {
     console.log(fighter);
@@ -96,16 +95,21 @@ function updateHpBar(who, pctHP) { //who is 'player' or 'enemy'
 
     const hpBar = $(`.stats.${who} .hp-bar-inner`)
 
-    if (pctHP >= .50) {
-        hpBar.css('background', 'green');
-    } else if (pctHP >= .25) {
-        hpBar.css('background', 'gold');
-    } else {
-        hpBar.css('background', 'firebrick');
-    }
     hpBar.animate({
         'width': pctHP * 85 + "%"
-    }, 700);
+    }, {
+        step: (number, tween) => {
+            console.log(number);
+            if (number >= 85 * .5) {
+                hpBar.css('background', 'green');
+            } else if (number >= 85 * .25) {
+                hpBar.css('background', 'gold');
+            } else {
+                hpBar.css('background', 'firebrick');
+            }
+        },
+        duration: 700
+    });
 }
 
 function defeatAnimation(who) {
@@ -152,7 +156,6 @@ function doubleCut(who) {
         right: '-17px',
         easing: 'linear'
     }, 400);
-
     $('.cut-back .path>.line').animate({
         width: '100%',
         easing: 'linear',
@@ -161,13 +164,6 @@ function doubleCut(who) {
         cut(who, 2);
     });
 }
-
-// function blink(who) {
-//     console.log(`blink ${who}`);
-//     const sprite = $(`.sprite.${who} img`);
-//     sprite.fadeOut(200);
-//     sprite.fadeIn(200);
-// }
 
 function blink(who, times) {
     const sprite = $(`.sprite.${who} img`);
@@ -178,7 +174,111 @@ function blink(who, times) {
     }
 }
 
-// $.bez([0.86, 0.01, 0.72, 0.03])
+// coordinates for thunder animation;
+const thunderbolt = [
+    [8, 1],
+    [6, 3],
+    [6, 5],
+    [8, 6],
+    [8, 8],
+    [7, 9],
+    [12, 12],
+    [10, 13],
+    [5, 12],
+    [9, 16],
+    [11, 17],
+    [10, 18],
+    [9, 18],
+    [6, 21],
+    [9, 23],
+    [5, 26],
+    [7, 27],
+    [3, 31],
+    [1, 32],
+    [3, 33],
+    [11, 35],
+    [7, 39],
+    [10, 40],
+    [19, 43],
+    [17, 45],
+    [15, 47],
+    [18, 48],
+    [15, 50],
+    [14, 52],
+    [16, 54],
+    [16, 55],
+];
+
+function thunder(who) {
+    // const path = $('<div class="thunder-container">');
+    const jc = $('<canvas id="thunder">')
+        .attr('width', '250px')
+        .attr('height', '250px')
+        .appendTo(`.sprite.${who}`)
+    const c = t[0].getContext('2d');
+
+    c.strokeStyle = "#FFFFFF";
+    c.lineWidth = 5;
+
+    console.log(c);
+
+    // c.beginPath();
+    // c.moveTo(thunderbolt[0][0] * 2, thunderbolt[0][1] * 4.5);
+
+    // thunderbolt.forEach(coods => {
+    //     c.moveTo(coord[0] * 2, coord[1] * 4.5);
+    // });
+
+
+    let t = 1;
+
+    let points = thunderbolt.map(coords => {
+        return [coords[0] * 4.5, coords[1] * 4.5];
+    })
+
+    function animate(next) {
+        if (t < points.length) {
+            window.requestAnimationFrame(() => { animate(next) });
+        } else {
+            next();
+        }
+        console.log('frame');
+        c.beginPath();
+        c.moveTo(points[t - 1][0], points[t - 1][1]);
+        c.lineTo(points[t][0], points[t][1]);
+        c.stroke();
+        t++;
+    }
+
+    animate( // Draw the first bolt
+        () => {
+
+            points = thunderbolt.map(coords => { // vertices for third bolt
+                return [(20 - coords[0]) * 4.5 + 160, coords[1] * 4.5];
+            });
+
+            t = 1;
+            animate( // Draw the second bolt
+                () => {
+
+                    points = thunderbolt.reverse().map(coords => { // create vertices for second bolt
+                        return [coords[0] * 4.5 + 80, (56 - coords[1]) * 4.5];
+                    });
+
+                    t = 1;
+                    animate(() => {}); // Draw third bolt;
+                }
+            );
+        }
+    );
+
+    // jc.animate(filter: )
+
+}
+
+
+
+
 const displayBuffer = [];
 
 $(document).ready(function() {
@@ -191,7 +291,6 @@ $(document).ready(function() {
 
     // Battle events
 
-    //TODO add display buffer to queue messages, only display battle menu when all text is displayed
     $('.battle-display').on('click', function() {
         updateDisplay();
     })
@@ -227,7 +326,12 @@ $(document).ready(function() {
                 //TODO put logic for when player loses here
             }
         } else {
-            displayBuffer.push({ text: `${main.enemy.name} is defeated.` });
+            displayBuffer.push({
+                text: `${main.enemy.name} is defeated.`,
+                animation: () => {
+                    defeatAnimation('enemy');
+                }
+            });
         }
 
         updateDisplay(); // 

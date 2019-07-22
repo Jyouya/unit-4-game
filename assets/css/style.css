@@ -28,8 +28,11 @@
 }
 
 .stats {
+    position: relative;
+    z-index: 1;
     grid-column-end: span 2;
-    background: pink;
+    /* background: pink; for debug */
+    background: white;
     padding-left: 5%;
     display: grid;
     grid-template-columns: 10% 15% 25% 50%;
@@ -51,7 +54,7 @@
 .sprite {
     grid-row-end: span 2;
     grid-column-end: span 1;
-    background: blue;
+    background: white;
     position: relative;
 }
 
@@ -71,7 +74,7 @@
     grid-column-start: 1;
     grid-column-end: span 3;
     border: double 5px black;
-    background: green;
+    background: white;
     font-size: 150%;
     padding: 1.5rem;
     z-index: 1;
@@ -233,7 +236,8 @@
     z-index: 1;
 }
 
-.path {
+.cut .path,
+.cut-back .path {
     position: absolute;
     width: 100%;
     top: 50%;
@@ -309,4 +313,10 @@
     transform: rotate(135deg);
     box-shadow: 0 0 0 3px black;
     mix-blend-mode: overlay;
+}
+
+#thunder {
+    position: absolute;
+    left: 14px;
+    top: 0;
 }
