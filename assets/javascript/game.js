@@ -3,10 +3,10 @@ let combatants; // Dictionary of combatant names and fighter objects
 const main = {
     initialize() {
         this.combatants = { // fill combatants with a fresh array of fighters when we initialize
-            "Obi Wan": new Fighter("Obi Wan", 120, 8, 20, thunder),
+            "Obi Wan": new Fighter("Obi Wan", 120, 8, 20, cut),
             "Darth Maul": new Fighter("Darth Maul", 180, 5, 25, doubleCut),
             "Luke Skywalker": new Fighter("Luke Skywalker", 100, 10, 5, cut),
-            "Darth Sidious": new Fighter("Darth Sidious", 150, 6, 15)
+            "Darth Sidious": new Fighter("Darth Sidious", 150, 6, 15, thunder)
         };
         this.state = 'character select';
 
@@ -78,7 +78,7 @@ function updateDisplay() {
         $('.battle-menu').hide();
         $('.battle-display').css(
             'cursor', 'pointer').text(
-            next.text); // Buffer should be no more than a few lines
+                next.text); // Buffer should be no more than a few lines
         if (next.animation) {
             next.animation();
         }
@@ -96,17 +96,17 @@ function updateHpBar(who, pctHP) { //who is 'player' or 'enemy'
     hpBar.animate({
         'width': pctHP * 85 + "%"
     }, {
-        step: (number, tween) => {
-            if (number >= 85 * .5) {
-                hpBar.css('background', 'green');
-            } else if (number >= 85 * .25) {
-                hpBar.css('background', 'gold');
-            } else {
-                hpBar.css('background', 'firebrick');
-            }
-        },
-        duration: 700
-    });
+            step: (number, tween) => {
+                if (number >= 85 * .5) {
+                    hpBar.css('background', 'green');
+                } else if (number >= 85 * .25) {
+                    hpBar.css('background', 'gold');
+                } else {
+                    hpBar.css('background', 'firebrick');
+                }
+            },
+            duration: 700
+        });
 }
 
 function defeatAnimation(who) {
@@ -116,7 +116,7 @@ function defeatAnimation(who) {
         'top': '100%',
         'height': '50%',
         'easing': jQuery.easing.easeInQuint // from easing library
-    }, 700, function() {
+    }, 700, function () {
         sprite.remove();
     });
 }
@@ -136,7 +136,7 @@ function cut(who, blinks) {
     $('.cut .path>.line').animate({
         width: '100%',
         easing: 'linear'
-    }, 400, function() {
+    }, 400, function () {
         blink(who, blinks);
         cut.remove();
     });
@@ -156,7 +156,7 @@ function doubleCut(who) {
     $('.cut-back .path>.line').animate({
         width: '100%',
         easing: 'linear',
-    }, 400, function() {
+    }, 400, function () {
         animation.remove();
         cut(who, 2);
     });
@@ -219,8 +219,6 @@ function thunder(who) {
     c.strokeStyle = "#FFFFFF";
     c.lineWidth = 5;
 
-    console.log(c);
-
     img.css({
         filter: 'invert(100%)',
         invert: 100
@@ -251,7 +249,7 @@ function thunder(who) {
             }
         }
 
-        t+=3;
+        t += 3;
 
         c.stroke();
     }
@@ -279,7 +277,6 @@ function thunder(who) {
     );
 
     function tweenInvert() {
-        console.log(this.invert);
         img.css({
             filter: `invert(${this.invert}%)`
         })
@@ -287,21 +284,21 @@ function thunder(who) {
 
     function flash() {
         // img.animate({ invert: 0 }, {
-        $({invert: 100}).animate({invert: 0}, {
+        $({ invert: 100 }).animate({ invert: 0 }, {
             duration: 100,
             easing: 'linear',
             step: tweenInvert,
-            done: function() {
-                $({invert: 0}).animate({ invert: 100 }, {
+            done: function () {
+                $({ invert: 0 }).animate({ invert: 100 }, {
                     duration: 100,
                     easing: 'linear',
                     step: tweenInvert,
-                    done: function() {
-                        $({invert: 100}).animate({ invert: 0 }, {
+                    done: function () {
+                        $({ invert: 100 }).animate({ invert: 0 }, {
                             duration: 100,
                             easing: 'linear',
                             step: tweenInvert,
-                            done: function() {
+                            done: function () {
                                 img.css({
                                     filter: 'invert(0%)'
                                 })
@@ -313,7 +310,7 @@ function thunder(who) {
             }
         })
     }
-    
+
     function retraceBolt() {
         c.globalCompositeOperation = "destination-out";
         c.lineWidth = 6;
@@ -323,27 +320,27 @@ function thunder(who) {
         t = 1;
         animate( // Draw the first bolt
             () => {
-                
+
                 points = thunderbolt.map(coords => { // vertices for third bolt
                     return [(20 - coords[0]) * 4.5 + 160, coords[1] * 4.5];
                 });
-                
+
                 t = 1;
                 animate( // Draw the second bolt
                     () => {
-                        
+
                         points = thunderbolt.reverse().map(coords => { // create vertices for second bolt
                             return [coords[0] * 4.5 + 80, (56 - coords[1]) * 4.5];
                         });
-                        
+
                         t = 1;
-                        animate(
+                        animate( // Draw third bolt, fix thunderbolt array, remove canvas
                             () => {
                                 c.globalCompositeOperation = "source-over"
                                 thunderbolt.reverse();
                                 jc.remove();
                             }
-                        ) // Draw third bolt; flash when done
+                        )
                     }
                 );
             }
@@ -351,98 +348,114 @@ function thunder(who) {
     }
 }
 
+// start out with transparent block,
+// fade to black 3 times, then stay black,
+// double radial swipe the shutter away
+function shutter() {
+    const top = $('<div class="shutter" id="top-shutter">').appendTo('#game-screen');
+    const bot = $('<div class="shutter" id="bottom-shutter">').appendTo('#game-screen');
 
+    $('.shutter').addClass('rotate');
+
+    // Add a callback so we get control back when the animation finishes.
+    $('#top-shutter').one('animationend', function() {
+        console.log('debug');
+    })
+
+
+
+}
 
 
 
 const displayBuffer = [];
 
-$(document).ready(function() {
-    main.initialize();
+    $(document).ready(function () {
+        main.initialize();
 
-    main.char = main.combatants["Obi Wan"];
-    main.enemy = main.combatants["Darth Maul"];
+        main.char = main.combatants["Obi Wan"];
+        main.enemy = main.combatants["Darth Maul"];
 
 
 
-    // Battle events
+        // Battle events
 
-    $('.battle-display').on('click', function() {
-        updateDisplay();
-    })
+        $('.battle-display').on('click', function () {
+            updateDisplay();
+        })
 
-    // Combat logic happens here.
-    $('.battle-menu #fight').on('click', function() {
-        const res = main.char.attackTarget(main.enemy);
-        displayBuffer.push({
-            text: `${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`,
-            // How would I bundle the values for main.enemy.HP with the function rather than references to them?
-            // Function.prototype.apply doesn't seem to do what I would expect.
-            animation: () => {
-                updateHpBar('enemy', main.enemy.HP / main.enemy.maxHP);
-                main.char.attackAnimation('enemy');
-            }
-        });
-        if (res) {
+        // Combat logic happens here.
+        $('.battle-menu #fight').on('click', function () {
+            const res = main.char.attackTarget(main.enemy);
             displayBuffer.push({
-                text: `${main.enemy.name} counterattacks for ${res} damage.`,
+                text: `${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`,
+                // How would I bundle the values for main.enemy.HP with the function rather than references to them?
+                // Function.prototype.apply doesn't seem to do what I would expect.
                 animation: () => {
-                    updateHpBar('player', main.char.HP / main.char.maxHP);
-                    main.enemy.attackAnimation('player');
-                    $('.stats.player .hp-value').text(`${main.char.HP > 0 ? main.char.HP : 0} / ${main.char.maxHP}`);
+                    updateHpBar('enemy', main.enemy.HP / main.enemy.maxHP);
+                    main.char.attackAnimation('enemy');
                 }
             });
-            if (main.char.HP <= 0) {
+            if (res) {
                 displayBuffer.push({
-                    text: `${main.char.name} is defeated.`,
+                    text: `${main.enemy.name} counterattacks for ${res} damage.`,
                     animation: () => {
-                        defeatAnimation('player');
+                        updateHpBar('player', main.char.HP / main.char.maxHP);
+                        main.enemy.attackAnimation('player');
+                        $('.stats.player .hp-value').text(`${main.char.HP > 0 ? main.char.HP : 0} / ${main.char.maxHP}`);
                     }
                 });
-                //TODO put logic for when player loses here
-            }
-        } else {
-            displayBuffer.push({
-                text: `${main.enemy.name} is defeated.`,
-                animation: () => {
-                    defeatAnimation('enemy');
+                if (main.char.HP <= 0) {
+                    displayBuffer.push({
+                        text: `${main.char.name} is defeated.`,
+                        animation: () => {
+                            defeatAnimation('player');
+                        }
+                    });
+                    //TODO put logic for when player loses here
                 }
-            });
-        }
+            } else {
+                displayBuffer.push({
+                    text: `${main.enemy.name} is defeated.`,
+                    animation: () => {
+                        defeatAnimation('enemy');
+                    }
+                });
+            }
 
-        updateDisplay(); // 
+            updateDisplay(); // 
 
-        $('.stats.player .level').text(`Lv${main.char.level}`);
+            $('.stats.player .level').text(`Lv${main.char.level}`);
+        });
+
+        // Logic for the buttons that don't do anything
+        $('.battle-menu #jedi').on('click', function () {
+            displayBuffer.push({ text: 'You have no other Jedi!' });
+            updateDisplay();
+        });
+
+        $('.battle-menu #item').on('click', function () {
+            displayBuffer.push({ text: 'Yoda: This isn\'t the time to use that!' });
+            updateDisplay();
+        });
+
+        $('.battle-menu #run').on('click', function () {
+            displayBuffer.push({ text: 'You can\'t run from a Jedi battle!' });
+            updateDisplay();
+        });
+
+        $('.cut').on('mouseover', function () {
+            $('.cut .star8').animate({
+                bottom: '-17',
+                left: '-17',
+                easing: 'linear'
+            }, 400);
+            $('.cut .path>.line').animate({
+                width: '100%',
+                easing: 'linear'
+            }, 400);
+        })
+
+
+
     });
-
-    // Logic for the buttons that don't do anything
-    $('.battle-menu #jedi').on('click', function() {
-        displayBuffer.push({ text: 'You have no other Jedi!' });
-        updateDisplay();
-    });
-
-    $('.battle-menu #item').on('click', function() {
-        displayBuffer.push({ text: 'Yoda: This isn\'t the time to use that!' });
-        updateDisplay();
-    });
-
-    $('.battle-menu #run').on('click', function() {
-        displayBuffer.push({ text: 'You can\'t run from a Jedi battle!' });
-        updateDisplay();
-    });
-
-    $('.cut').on('mouseover', function() {
-        $('.cut .star8').animate({
-            bottom: '-17',
-            left: '-17',
-            easing: 'linear'
-        }, 400);
-        $('.cut .path>.line').animate({
-            width: '100%',
-            easing: 'linear'
-        }, 400);
-    })
-
-
-
-});

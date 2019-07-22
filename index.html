@@ -8,7 +8,8 @@
     <title>Star Wars RPG</title>
     <!-- Not needed with bootstrap -->
     <!-- <link rel="stylesheet" href="assets/css/reset.css"> -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
@@ -30,42 +31,53 @@
         </div>
         <div class="row mt-2"><button type="button" class="btn btn-danger" id="attack">Attack</button></div>
     </div>
+    <div id="game-screen">
+        <div class="battle">
+            <div class="stats enemy">
+                <div class="name">TestName</div>
+                <div class="level">Lv70</div>
+                <div class="hp-label">HP:</div>
+                <div class="hp-bar-inner"></div>
+                <div class="hp-bar-outer"></div>
+                <div class="trim">
+                    <div class="arrow-right"></div>
+                </div>
 
-    <div class="battle">
-        <div class="stats enemy">
-            <div class="name">TestName</div>
-            <div class="level">Lv70</div>
-            <div class="hp-label">HP:</div>
-            <div class="hp-bar-inner"></div>
-            <div class="hp-bar-outer"></div>
-            <div class="trim">
-                <div class="arrow-right"></div>
             </div>
-
-        </div>
-        <div class="sprite enemy">
-            <img src="assets/images/Darth Maul.png" alt="" style="position: relative; z-index: 0; object-fit: cover; width: 100%; object-position: 0 0;">
-        </div>
-        <div class="sprite player">
-            <img src="assets/images/Obi Wan.png" alt="" style="position: relative; z-index: 0; object-fit: cover; width: 100%; object-position: 0 0;">
-        </div>
-        <div class="stats player">
-            <div class="name">TestName</div>
-            <div class="level">Lv1</div>
-            <div class="hp-label">HP:</div>
-            <div class="hp-bar-inner"></div>
-            <div class="hp-bar-outer"></div>
-            <div class="hp-value">100 / 150</div>
-            <div class="trim">
-                <div class="arrow-left"></div>
+            <div class="sprite enemy">
+                <img src="assets/images/Darth Maul.png" alt=""
+                    style="position: relative; z-index: 0; object-fit: cover; width: 100%; object-position: 0 0;">
             </div>
-        </div>
-        <div class="battle-display"></div>
-        <div class="battle-menu">
-            <button id="fight"><div class="menu-arrow"></div>FIGHT</button>
-            <button id="jedi"><div class="menu-arrow"></div><sup>J</sup><sub>E</sub><sup>D</sup><sub>I</sub></button>
-            <button id="item"><div class="menu-arrow"></div>ITEM</button>
-            <button id="run"><div class="menu-arrow"></div>RUN</button>
+            <div class="sprite player">
+                <img src="assets/images/Obi Wan.png" alt=""
+                    style="position: relative; z-index: 0; object-fit: cover; width: 100%; object-position: 0 0;">
+            </div>
+            <div class="stats player">
+                <div class="name">TestName</div>
+                <div class="level">Lv1</div>
+                <div class="hp-label">HP:</div>
+                <div class="hp-bar-inner"></div>
+                <div class="hp-bar-outer"></div>
+                <div class="hp-value">100 / 150</div>
+                <div class="trim">
+                    <div class="arrow-left"></div>
+                </div>
+            </div>
+            <div class="battle-display"></div>
+            <div class="battle-menu">
+                <button id="fight">
+                    <div class="menu-arrow"></div>FIGHT
+                </button>
+                <button id="jedi">
+                    <div class="menu-arrow"></div><sup>J</sup><sub>E</sub><sup>D</sup><sub>I</sub>
+                </button>
+                <button id="item">
+                    <div class="menu-arrow"></div>ITEM
+                </button>
+                <button id="run">
+                    <div class="menu-arrow"></div>RUN
+                </button>
+            </div>
         </div>
     </div>
 

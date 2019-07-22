@@ -16,7 +16,6 @@
     height: 25%;
 }
 
-
 /* Pokemon Battle */
 
 .battle {
@@ -121,8 +120,7 @@
     bottom: -3px;
 }
 
-.stats .hp-bar-outer,
-.stats .hp-bar-inner {
+.stats .hp-bar-outer, .stats .hp-bar-inner {
     height: 50%;
     width: 85%;
     grid-row-start: 3;
@@ -226,8 +224,7 @@
     cursor: pointer;
 }
 
-.cut,
-.cut-back {
+.cut, .cut-back {
     position: absolute;
     left: 0;
     top: 0;
@@ -236,8 +233,7 @@
     z-index: 1;
 }
 
-.cut .path,
-.cut-back .path {
+.cut .path, .cut-back .path {
     position: absolute;
     width: 100%;
     top: 50%;
@@ -319,4 +315,54 @@
     position: absolute;
     left: 14px;
     top: 0;
+}
+
+#game-screen {
+    position: relative;
+}
+
+.shutter {
+    overflow: hidden;
+    height: 300px;
+    width: 600px;
+    position: absolute;
+    z-index: 10;
+}
+
+.shutter:before {
+    content: "";
+    height: 500px;
+    width: 1000px;
+    position: absolute;
+    background-color: black;
+    left: -200px;
+}
+
+#top-shutter:before  {
+    transform-origin: 50% 100%;
+    top: -200px;
+}
+
+#top-shutter {
+    top: 0;
+}
+
+#bottom-shutter:before {
+    transform-origin: 50% 0;
+}
+
+#bottom-shutter {
+    bottom: 0;
+}
+
+.rotate:before {
+    animation-name: rotate;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes rotate {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(180deg);}
 }
