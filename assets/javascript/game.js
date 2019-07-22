@@ -99,7 +99,6 @@ function updateHpBar(who, pctHP) { //who is 'player' or 'enemy'
         'width': pctHP * 85 + "%"
     }, {
         step: (number, tween) => {
-            console.log(number);
             if (number >= 85 * .5) {
                 hpBar.css('background', 'green');
             } else if (number >= 85 * .25) {
@@ -215,20 +214,19 @@ function thunder(who) {
         .attr('width', '250px')
         .attr('height', '250px')
         .appendTo(`.sprite.${who}`)
-    const c = t[0].getContext('2d');
+    const c = jc[0].getContext('2d');
+
+    const img = $(`.sprite.${who}`)
 
     c.strokeStyle = "#FFFFFF";
     c.lineWidth = 5;
 
     console.log(c);
 
-    // c.beginPath();
-    // c.moveTo(thunderbolt[0][0] * 2, thunderbolt[0][1] * 4.5);
-
-    // thunderbolt.forEach(coods => {
-    //     c.moveTo(coord[0] * 2, coord[1] * 4.5);
-    // });
-
+    img.css({
+        filter: 'invert(100%)',
+        invert: 100
+    })
 
     let t = 1;
 
@@ -240,9 +238,10 @@ function thunder(who) {
         if (t < points.length) {
             window.requestAnimationFrame(() => { animate(next) });
         } else {
-            next();
+            window.requestAnimationFrame(() => { next() });
+            return;
         }
-        console.log('frame');
+        // console.log('frame ' + t, points.length);
         c.beginPath();
         c.moveTo(points[t - 1][0], points[t - 1][1]);
         c.lineTo(points[t][0], points[t][1]);
@@ -266,15 +265,52 @@ function thunder(who) {
                     });
 
                     t = 1;
-                    animate(() => {}); // Draw third bolt;
+                    animate(flash) // Draw third bolt; flash when done
                 }
             );
         }
     );
 
+    function tweenInvert() {
+        console.log(this.invert);
+        img.css({
+            filter: `invert(${this.invert}%)`
+        })
+    }
+
+    //TODO This doesn't work, https://stackoverflow.com/questions/20082283/animate-blur-filter
+    // Probably need the dummy element to animate, then have the step function do the real element
+    function flash() {
+        img.animate({ invert: 0 }, {
+            duration: 100,
+            easing: 'linear',
+            step: tweenInvert,
+            callback: function() {
+                img.animate({ invert: 100 }, {
+                    duration: 100,
+                    easing: 'linear',
+                    step: tweenInvert,
+                    callback: function() {
+                        img.animate({ invert: 0 }, {
+                            duration: 100,
+                            easing: 'linear',
+                            step: tweenInvert,
+                            callback: function() {
+                                img.css({
+                                    filter: 'invert(0%)'
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    }
+
     // jc.animate(filter: )
 
 }
+
 
 
 
