@@ -38,7 +38,6 @@ function makeCard(fighter) {
 function cardListener(event) {
     switch (main.state) {
         case 'character select':
-            // I am completely baffled as to why event.currentTarget.value is undefined;
 
             main.char = $(this).attr('value');
             console.log(main.char);
@@ -91,7 +90,6 @@ function updateDisplay() {
 }
 
 function updateHpBar(who, pctHP) { //who is 'player' or 'enemy'
-    console.log('HP Bar Animation');
 
     const hpBar = $(`.stats.${who} .hp-bar-inner`)
 
@@ -245,8 +243,17 @@ function thunder(who) {
         c.beginPath();
         c.moveTo(points[t - 1][0], points[t - 1][1]);
         c.lineTo(points[t][0], points[t][1]);
+
+        // Draw up to 3 segments per frame;
+        for (let i = t + 1; i < t + 3; i++) {
+            if (i < points.length) {
+                c.lineTo(points[i][0], points[i][1]);
+            }
+        }
+
+        t+=3;
+
         c.stroke();
-        t++;
     }
 
     animate( // Draw the first bolt
@@ -278,27 +285,27 @@ function thunder(who) {
         })
     }
 
-    //TODO This doesn't work, https://stackoverflow.com/questions/20082283/animate-blur-filter
-    // Probably need the dummy element to animate, then have the step function do the real element
     function flash() {
-        img.animate({ invert: 0 }, {
+        // img.animate({ invert: 0 }, {
+        $({invert: 100}).animate({invert: 0}, {
             duration: 100,
             easing: 'linear',
             step: tweenInvert,
-            callback: function() {
-                img.animate({ invert: 100 }, {
+            done: function() {
+                $({invert: 0}).animate({ invert: 100 }, {
                     duration: 100,
                     easing: 'linear',
                     step: tweenInvert,
-                    callback: function() {
-                        img.animate({ invert: 0 }, {
+                    done: function() {
+                        $({invert: 100}).animate({ invert: 0 }, {
                             duration: 100,
                             easing: 'linear',
                             step: tweenInvert,
-                            callback: function() {
+                            done: function() {
                                 img.css({
                                     filter: 'invert(0%)'
                                 })
+                                retraceBolt();
                             }
                         })
                     }
@@ -306,9 +313,42 @@ function thunder(who) {
             }
         })
     }
-
-    // jc.animate(filter: )
-
+    
+    function retraceBolt() {
+        c.globalCompositeOperation = "destination-out";
+        c.lineWidth = 6;
+        points = thunderbolt.reverse().map(coords => {
+            return [coords[0] * 4.5, coords[1] * 4.5];
+        });
+        t = 1;
+        animate( // Draw the first bolt
+            () => {
+                
+                points = thunderbolt.map(coords => { // vertices for third bolt
+                    return [(20 - coords[0]) * 4.5 + 160, coords[1] * 4.5];
+                });
+                
+                t = 1;
+                animate( // Draw the second bolt
+                    () => {
+                        
+                        points = thunderbolt.reverse().map(coords => { // create vertices for second bolt
+                            return [coords[0] * 4.5 + 80, (56 - coords[1]) * 4.5];
+                        });
+                        
+                        t = 1;
+                        animate(
+                            () => {
+                                c.globalCompositeOperation = "source-over"
+                                thunderbolt.reverse();
+                                jc.remove();
+                            }
+                        ) // Draw third bolt; flash when done
+                    }
+                );
+            }
+        );
+    }
 }
 
 
