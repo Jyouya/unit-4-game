@@ -358,7 +358,7 @@ function shutter() {
     $('.shutter').addClass('rotate');
 
     // Add a callback so we get control back when the animation finishes.
-    $('#top-shutter').one('animationend', function() {
+    $('#top-shutter').one('animationend', function () {
         console.log('debug');
     })
 
@@ -370,92 +370,92 @@ function shutter() {
 
 const displayBuffer = [];
 
-    $(document).ready(function () {
-        main.initialize();
+$(document).ready(function () {
+    main.initialize();
 
-        main.char = main.combatants["Obi Wan"];
-        main.enemy = main.combatants["Darth Maul"];
+    main.char = main.combatants["Obi Wan"];
+    main.enemy = main.combatants["Darth Maul"];
 
 
 
-        // Battle events
+    // Battle events
 
-        $('.battle-display').on('click', function () {
-            updateDisplay();
-        })
+    $('.battle-display').on('click', function () {
+        updateDisplay();
+    })
 
-        // Combat logic happens here.
-        $('.battle-menu #fight').on('click', function () {
-            const res = main.char.attackTarget(main.enemy);
+    // Combat logic happens here.
+    $('.battle-menu #fight').on('click', function () {
+        const res = main.char.attackTarget(main.enemy);
+        displayBuffer.push({
+            text: `${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`,
+            // How would I bundle the values for main.enemy.HP with the function rather than references to them?
+            // Function.prototype.apply doesn't seem to do what I would expect.
+            animation: () => {
+                updateHpBar('enemy', main.enemy.HP / main.enemy.maxHP);
+                main.char.attackAnimation('enemy');
+            }
+        });
+        if (res) {
             displayBuffer.push({
-                text: `${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`,
-                // How would I bundle the values for main.enemy.HP with the function rather than references to them?
-                // Function.prototype.apply doesn't seem to do what I would expect.
+                text: `${main.enemy.name} counterattacks for ${res} damage.`,
                 animation: () => {
-                    updateHpBar('enemy', main.enemy.HP / main.enemy.maxHP);
-                    main.char.attackAnimation('enemy');
+                    updateHpBar('player', main.char.HP / main.char.maxHP);
+                    main.enemy.attackAnimation('player');
+                    $('.stats.player .hp-value').text(`${main.char.HP > 0 ? main.char.HP : 0} / ${main.char.maxHP}`);
                 }
             });
-            if (res) {
+            if (main.char.HP <= 0) {
                 displayBuffer.push({
-                    text: `${main.enemy.name} counterattacks for ${res} damage.`,
+                    text: `${main.char.name} is defeated.`,
                     animation: () => {
-                        updateHpBar('player', main.char.HP / main.char.maxHP);
-                        main.enemy.attackAnimation('player');
-                        $('.stats.player .hp-value').text(`${main.char.HP > 0 ? main.char.HP : 0} / ${main.char.maxHP}`);
+                        defeatAnimation('player');
                     }
                 });
-                if (main.char.HP <= 0) {
-                    displayBuffer.push({
-                        text: `${main.char.name} is defeated.`,
-                        animation: () => {
-                            defeatAnimation('player');
-                        }
-                    });
-                    //TODO put logic for when player loses here
-                }
-            } else {
-                displayBuffer.push({
-                    text: `${main.enemy.name} is defeated.`,
-                    animation: () => {
-                        defeatAnimation('enemy');
-                    }
-                });
+                //TODO put logic for when player loses here
             }
+        } else {
+            displayBuffer.push({
+                text: `${main.enemy.name} is defeated.`,
+                animation: () => {
+                    defeatAnimation('enemy');
+                }
+            });
+        }
 
-            updateDisplay(); // 
+        updateDisplay(); // 
 
-            $('.stats.player .level').text(`Lv${main.char.level}`);
-        });
-
-        // Logic for the buttons that don't do anything
-        $('.battle-menu #jedi').on('click', function () {
-            displayBuffer.push({ text: 'You have no other Jedi!' });
-            updateDisplay();
-        });
-
-        $('.battle-menu #item').on('click', function () {
-            displayBuffer.push({ text: 'Yoda: This isn\'t the time to use that!' });
-            updateDisplay();
-        });
-
-        $('.battle-menu #run').on('click', function () {
-            displayBuffer.push({ text: 'You can\'t run from a Jedi battle!' });
-            updateDisplay();
-        });
-
-        $('.cut').on('mouseover', function () {
-            $('.cut .star8').animate({
-                bottom: '-17',
-                left: '-17',
-                easing: 'linear'
-            }, 400);
-            $('.cut .path>.line').animate({
-                width: '100%',
-                easing: 'linear'
-            }, 400);
-        })
-
-
-
+        $('.stats.player .level').text(`Lv${main.char.level}`);
     });
+
+    // Logic for the buttons that don't do anything
+    $('.battle-menu #jedi').on('click', function () {
+        displayBuffer.push({ text: 'You have no other Jedi!' });
+        updateDisplay();
+    });
+
+    $('.battle-menu #item').on('click', function () {
+        displayBuffer.push({ text: 'Yoda: This isn\'t the time to use that!' });
+        updateDisplay();
+    });
+
+    $('.battle-menu #run').on('click', function () {
+        displayBuffer.push({ text: 'You can\'t run from a Jedi battle!' });
+        updateDisplay();
+    });
+
+    $('.cut').on('mouseover', function () {
+        $('.cut .star8').animate({
+            bottom: '-17',
+            left: '-17',
+            easing: 'linear'
+        }, 400);
+        $('.cut .path>.line').animate({
+            width: '100%',
+            easing: 'linear'
+        }, 400);
+    })
+
+
+
+});

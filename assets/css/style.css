@@ -366,3 +366,43 @@
     from {transform: rotate(0deg);}
     to {transform: rotate(180deg);}
 }
+
+.enemy-select {
+    width: 600px;
+    height: 600px;
+    text-align: center;
+}
+
+.enemy-option {
+    width: 150px;
+    margin: auto auto;
+    transition: transform .2s;
+    padding: 3px;
+    border: 1px lightgrey solid;
+}
+
+.enemy-option img {
+    width: 100%;
+}
+
+.enemy-option:hover {
+    transform: scale(1.4);
+}
+
+.options {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 75%;
+}
+
+.battle-display {
+    grid-row-start: 4;
+    grid-column-start: 1;
+    grid-column-end: span 3;
+    border: double 5px black;
+    background: white;
+    font-size: 150%;
+    padding: 1.5rem;
+    z-index: 1;
+}
