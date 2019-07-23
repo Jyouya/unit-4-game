@@ -3,10 +3,10 @@ let combatants; // Dictionary of combatant names and fighter objects
 const main = {
     initialize() {
         this.combatants = { // fill combatants with a fresh array of fighters when we initialize
-            "Obi Wan": new Fighter("Obi Wan", 120, 8, 20, cut),
-            "Darth Maul": new Fighter("Darth Maul", 180, 5, 25, doubleCut),
-            "Luke Skywalker": new Fighter("Luke Skywalker", 100, 10, 5, cut),
-            "Darth Sidious": new Fighter("Darth Sidious", 150, 6, 15, thunder)
+            "Obi Wan": new Fighter("Obi Wan", 120, 8, 20, cut, ['I\'s over Anakin, I have the high ground.']),
+            "Darth Maul": new Fighter("Darth Maul", 180, 5, 25, doubleCut, ['At last we will reveal ourselves to the Jedi.', 'At last we will have revenge.']),
+            "Luke Skywalker": new Fighter("Luke Skywalker", 100, 10, 5, cut, ['You\'re gravely mistaken, you won’t convert me as you did my father.']),
+            "Darth Sidious": new Fighter("Darth Sidious", 150, 6, 15, thunder, ['Did you ever hear the Tragedy of Darth Plagueis the wise?', 'I thought not. It\'s not a story the Jedi would tell you.'])
         };
         this.state = 'character select';
 
@@ -30,6 +30,8 @@ const main = {
         $('#message').text('Choose your fighter');
 
         $('.battle').hide();
+        $('.enemy-select').hide();
+        $('.v-center').hide();
     },
     char: {},
 };
@@ -59,8 +61,10 @@ function cardListener(event) {
         fadeout.show();
         fadeout.animate({ opacity: '1.0' }, {
             duration: 1000,
-            done: function() {
+            done: function () {
                 $('#game').hide();
+                $('.v-center').show();
+                $('.enemy-select').show();
 
                 // Populate .options
                 for (name in main.combatants) {
@@ -76,7 +80,7 @@ function cardListener(event) {
                 fadeout.animate({ opacity: '0' }, {
                     duration: 1000,
                     done: fadeout.hide.bind(fadeout)
-                })
+                });
             }
 
         });
@@ -92,6 +96,26 @@ function cardListener(event) {
     //         // $('#stage').detach().appendTo('#game');
     //     }
 
+}
+
+function afterBattle() { // redraw opponent selection after a battle
+    $('.battle').hide();
+    $('.enemy-select').show();
+    // Populate .options
+    for (name in main.combatants) {
+        const combatant = main.combatants[name];
+        $(`<div class="enemy-option" id="${combatant.id}" value="${name}">`).append(
+            $(`<img src="assets/images/${name}.png">`)
+        ).appendTo('.options');
+    };
+    // Your opponent, you must choose to .display
+    $('.display').text('Yoda: Choose your opponent, you must.');
+
+    //fade back 
+    $('#game-fade').fadeOut(1000).promise().then( () => {
+        console.log('fadeout');
+        $('#game-fade').remove();
+    });
 }
 
 
@@ -115,7 +139,7 @@ function updateDisplay() {
         $('.battle-menu').hide();
         $('.battle-display').css(
             'cursor', 'pointer').text(
-            next.text); // Buffer should be no more than a few lines
+                next.text); // Buffer should be no more than a few lines
         if (next.animation) {
             next.animation();
         }
@@ -133,17 +157,17 @@ function updateHpBar(who, pctHP) { //who is 'player' or 'enemy'
     hpBar.animate({
         'width': pctHP * 85 + "%"
     }, {
-        step: (number, tween) => {
-            if (number >= 85 * .5) {
-                hpBar.css('background', 'green');
-            } else if (number >= 85 * .25) {
-                hpBar.css('background', 'gold');
-            } else {
-                hpBar.css('background', 'firebrick');
-            }
-        },
-        duration: 700
-    });
+            step: (number, tween) => {
+                if (number >= 85 * .5) {
+                    hpBar.css('background', 'green');
+                } else if (number >= 85 * .25) {
+                    hpBar.css('background', 'gold');
+                } else {
+                    hpBar.css('background', 'firebrick');
+                }
+            },
+            duration: 700
+        });
 }
 
 function defeatAnimation(who) {
@@ -153,7 +177,7 @@ function defeatAnimation(who) {
         'top': '100%',
         'height': '50%',
         'easing': jQuery.easing.easeInQuint // from easing library
-    }, 700, function() {
+    }, 700, function () {
         sprite.remove();
     });
 }
@@ -173,7 +197,7 @@ function cut(who, blinks) {
     $('.cut .path>.line').animate({
         width: '100%',
         easing: 'linear'
-    }, 400, function() {
+    }, 400, function () {
         blink(who, blinks);
         cut.remove();
     });
@@ -193,7 +217,7 @@ function doubleCut(who) {
     $('.cut-back .path>.line').animate({
         width: '100%',
         easing: 'linear',
-    }, 400, function() {
+    }, 400, function () {
         animation.remove();
         cut(who, 2);
     });
@@ -325,17 +349,17 @@ function thunder(who) {
             duration: 100,
             easing: 'linear',
             step: tweenInvert,
-            done: function() {
+            done: function () {
                 $({ invert: 0 }).animate({ invert: 100 }, {
                     duration: 100,
                     easing: 'linear',
                     step: tweenInvert,
-                    done: function() {
+                    done: function () {
                         $({ invert: 100 }).animate({ invert: 0 }, {
                             duration: 100,
                             easing: 'linear',
                             step: tweenInvert,
-                            done: function() {
+                            done: function () {
                                 img.css({
                                     filter: 'invert(0%)'
                                 })
@@ -388,22 +412,34 @@ function thunder(who) {
 // start out with transparent block,
 // fade to black 3 times, then stay black,
 // double radial swipe the shutter away
-function shutter() {
+function shutter(resolve) {
     const top = $('<div class="shutter" id="top-shutter">').appendTo('#game-screen');
     const bot = $('<div class="shutter" id="bottom-shutter">').appendTo('#game-screen');
 
-    top.fadeIn(100);
-    bot.fadeIn(100);
-    top.fadeIn(100);
-    bot.fadeIn(100);
+    top.hide();
+    bot.hide();
+
+    let i = 2;
+
+    while (i--) {
+        top.fadeIn(150);
+        bot.fadeIn(150);
+        top.fadeOut(150);
+        bot.fadeOut(150);
+    }
+    top.fadeIn(150);
+    bot.fadeIn(150);
+    top.fadeOut(150);
+    bot.fadeOut(150, () => {
+        $('.shutter').show();
+        $('.shutter').addClass('rotate');
+    });
 
 
-    $('.shutter').addClass('rotate');
+
 
     // Add a callback so we get control back when the animation finishes.
-    $('#top-shutter').one('animationend', function() {
-        console.log('debug');
-    })
+    $('#top-shutter').one('animationend', resolve);
 }
 
 // takes two fighter objects, returns nothing
@@ -427,7 +463,7 @@ function setupBattle(player, enemy) {
 
 const displayBuffer = [];
 
-$(document).ready(function() {
+$(document).ready(function () {
     main.initialize();
 
     //main.char = main.combatants["Obi Wan"];
@@ -435,7 +471,7 @@ $(document).ready(function() {
 
     // Enemy Select events
 
-    $('#game-screen').on('click', '.enemy-option', function() {
+    $('#game-screen').on('click', '.enemy-option', function () {
         // Don't accept clicks during transitions
         if (main.state != 'opponent select') return;
         console.log($(this).attr('value'));
@@ -443,14 +479,31 @@ $(document).ready(function() {
         delete main.combatants[main.enemy.name];
         main.state = 'battle';
 
-        //Shutter transition 
-        //TODO shutter goes the wrong way.  Should close to black screen
-        // then battle sprites slide past eachother to get into position
+        //Flashes, radial swipes, fades back in, sprites slide into place
+        new Promise(shutter).then(() => {
+            $('.shutter').fadeOut(500);
+            $('.enemy-select').hide();
+            $('.options').empty();
 
+            setupBattle(main.char, main.enemy);
+            $('.battle').show();
+        }).then(() => {
+            displayBuffer.push({
+                text: `${main.enemy.name} wants to battle!`
+            });
+            updateDisplay();
+            $('.sprite.enemy').animate({
+                right: '0px',
+                easing: jQuery.easing.easeOutQuad
+            }, 600);
+            $('.sprite.player').animate({
+                left: '0px',
+                easing: jQuery.easing.easeOutQuad
+            }, 600).promise().then(() => {
+                // Executes when the entire animation is finished  
+            })
+        });
 
-        $('.enemy-select').hide();
-        setupBattle(main.char, main.enemy);
-        $('.battle').show();
 
     });
 
@@ -459,12 +512,12 @@ $(document).ready(function() {
 
     // Battle events
 
-    $('.battle-display').on('click', function() {
+    $('.battle-display').on('click', function () {
         updateDisplay();
     })
 
     // Combat logic happens here.
-    $('.battle-menu #fight').on('click', function() {
+    $('.battle-menu #fight').on('click', function () {
         const res = main.char.attackTarget(main.enemy);
         displayBuffer.push({
             text: `${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`,
@@ -491,13 +544,28 @@ $(document).ready(function() {
                         defeatAnimation('player');
                     }
                 });
-                //TODO put logic for when player loses here
+
+                main.enemy.winText.forEach(line => {
+                    displayBuffer.push({
+                        text: `${main.enemy.name}: ${line}`
+                    });
+                });
+                //TODO put GameOver logic here
             }
         } else {
             displayBuffer.push({
                 text: `${main.enemy.name} is defeated.`,
                 animation: () => {
                     defeatAnimation('enemy');
+                }
+            });
+
+            displayBuffer.push({
+                text: '',
+                animation: () => {
+                    main.state = 'opponent select';
+                    //$('.shutter').fadeIn(300).fadeOut(300).fadeIn(300).fadeOut(300); // Flashes while spinning.  Kinda cool, but not what I want
+                    $('<div id="game-fade">').hide().appendTo('#game-screen').fadeIn(1000).promise().then( afterBattle );
                 }
             });
         }
@@ -508,33 +576,18 @@ $(document).ready(function() {
     });
 
     // Logic for the buttons that don't do anything
-    $('.battle-menu #jedi').on('click', function() {
+    $('.battle-menu #jedi').on('click', function () {
         displayBuffer.push({ text: 'You have no other Jedi!' });
         updateDisplay();
     });
 
-    $('.battle-menu #item').on('click', function() {
-        displayBuffer.push({ text: 'Yoda: The time to use that this isn\'t !' });
+    $('.battle-menu #item').on('click', function () {
+        displayBuffer.push({ text: 'Yoda: The time to use that, this isn\'t !' });
         updateDisplay();
     });
 
-    $('.battle-menu #run').on('click', function() {
+    $('.battle-menu #run').on('click', function () {
         displayBuffer.push({ text: 'You can\'t run from a Jedi battle!' });
         updateDisplay();
     });
-
-    // $('.cut').on('mouseover', function() {
-    //     $('.cut .star8').animate({
-    //         bottom: '-17',
-    //         left: '-17',
-    //         easing: 'linear'
-    //     }, 400);
-    //     $('.cut .path>.line').animate({
-    //         width: '100%',
-    //         easing: 'linear'
-    //     }, 400);
-    // })
-
-
-
 });

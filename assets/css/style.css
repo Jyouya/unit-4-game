@@ -73,11 +73,13 @@ body {
     grid-column-start: 1;
     grid-row-start: 2;
     position: relative;
+    left: 600px;
 }
 
 .sprite.enemy {
     grid-column-start: 3;
     grid-row-start: 1;
+    right: 600px;
 }
 
 .sprite img {
@@ -354,6 +356,16 @@ body {
     background: white;
 }
 
+#game-fade {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+}
+
 .shutter {
     overflow: hidden;
     height: 300px;
@@ -388,7 +400,9 @@ body {
     bottom: 0;
 }
 
+
 .rotate:before {
+    transform: rotate(180deg);
     animation-name: rotate;
     animation-duration: 1s;
     animation-timing-function: linear;
@@ -397,10 +411,10 @@ body {
 
 @keyframes rotate {
     from {
-        transform: rotate(0deg);
+        transform: rotate(180deg);
     }
     to {
-        transform: rotate(180deg);
+        transform: rotate(0deg);
     }
 }
 
