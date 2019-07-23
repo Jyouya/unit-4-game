@@ -2,6 +2,17 @@
     width: 20%;
 } */
 
+body {
+    background: url(../images/dark-honeycomb.png);
+}
+
+.v-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+}
+
 .fighter img {
     width: 100%;
     object-fit: scale-down;
@@ -15,6 +26,7 @@
 #arena {
     height: 25%;
 }
+
 
 /* Pokemon Battle */
 
@@ -120,7 +132,8 @@
     bottom: -3px;
 }
 
-.stats .hp-bar-outer, .stats .hp-bar-inner {
+.stats .hp-bar-outer,
+.stats .hp-bar-inner {
     height: 50%;
     width: 85%;
     grid-row-start: 3;
@@ -224,7 +237,8 @@
     cursor: pointer;
 }
 
-.cut, .cut-back {
+.cut,
+.cut-back {
     position: absolute;
     left: 0;
     top: 0;
@@ -233,7 +247,8 @@
     z-index: 1;
 }
 
-.cut .path, .cut-back .path {
+.cut .path,
+.cut-back .path {
     position: absolute;
     width: 100%;
     top: 50%;
@@ -319,6 +334,16 @@
 
 #game-screen {
     position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    width: 600px;
+    height: 600px;
+    overflow: hidden;
+    border: 5px outset rgba(28, 110, 164, 0.53);
+    box-sizing: content-box;
+    -webkit-box-shadow: 5px 5px 15px 5px #000000;
+    box-shadow: 5px 5px 15px 5px #000000;
+    background: white;
 }
 
 .shutter {
@@ -338,7 +363,7 @@
     left: -200px;
 }
 
-#top-shutter:before  {
+#top-shutter:before {
     transform-origin: 50% 100%;
     top: -200px;
 }
@@ -363,8 +388,12 @@
 }
 
 @keyframes rotate {
-    from {transform: rotate(0deg);}
-    to {transform: rotate(180deg);}
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(180deg);
+    }
 }
 
 .enemy-select {
@@ -379,15 +408,26 @@
     transition: transform .2s;
     padding: 3px;
     border: 1px lightgrey solid;
+    cursor: pointer;
 }
 
 .enemy-option img {
     width: 100%;
 }
 
+
+/* #luke-skywalker.enemy-option:hover:before {
+    content: "Luke Skywalker";
+} */
+
 .enemy-option:hover {
     transform: scale(1.4);
 }
+
+
+/* .enemy-option:hover:after {
+    content: "100";
+} */
 
 .options {
     display: flex;
@@ -396,13 +436,25 @@
     height: 75%;
 }
 
-.battle-display {
-    grid-row-start: 4;
-    grid-column-start: 1;
-    grid-column-end: span 3;
+.display {
     border: double 5px black;
     background: white;
     font-size: 150%;
     padding: 1.5rem;
     z-index: 1;
+    width: 100%;
+    height: 150px;
+    text-align: left;
+}
+
+#fadeout {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: black;
+    opacity: 0;
+    z-index: 1000;
+    pointer-events: none;
 }

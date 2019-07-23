@@ -13,19 +13,27 @@ const main = {
         const stage = $('#stage');
         for (const name in this.combatants) {
             stage.append(makeCard(this.combatants[name]));
+            console.log(this.combatants[name].id);
+            $('head').append(`<style>
+                #${this.combatants[name].id}.enemy-option:hover:before{
+                    content: "${name}";
+                }
+                #${this.combatants[name].id}.enemy-option:hover:after{
+                    content: "${this.combatants[name].maxHP}";
+                }
+                </style>`);
         }
 
         $('#game').on('click', '.fighter', cardListener);
 
-        $('#attack').on('click', attack);
-
         $('#message').text('Choose your fighter');
+
+        $('.battle').hide();
     },
-    char: '',
+    char: {},
 };
 
 function makeCard(fighter) {
-    console.log(fighter);
     return $('<div>').addClass('card fighter p-1 col-6 col-md-3').attr('value', fighter.name).attr('id', fighter.name.replace(' ', '')).append(
         $('<img>').attr('src', `assets/images/${fighter.name}.png`),
         $('<div>').addClass('card-body').append(
@@ -36,40 +44,68 @@ function makeCard(fighter) {
 }
 
 function cardListener(event) {
-    switch (main.state) {
-        case 'character select':
+    // switch (main.state) {
+    //     case 'character select':
 
-            main.char = $(this).attr('value');
-            console.log(main.char);
-            $(this).detach().removeClass('col-6 col-md-3').appendTo('#your-character');
-            main.state = 'opponent select';
-            $('#message').text('Choose your opponent');
-            return;
-        case 'opponent select':
-            if ($(this).attr('value') != main.char) {
-                main.enemy = $(this).attr('value');
+    if (main.state == 'character select') {
+        main.char = main.combatants[$(this).attr('value')];;
+        delete main.combatants[main.char.name]; // take our character out of the combatants array and put it on main.char
+        $(this).remove();
+        main.state = 'opponent select';
+        //$('#message').text('Choose your opponent');
 
-                $(this).detach().removeClass('col-6 col-md-3').appendTo('#defender');
-                $('#message').text('Fight!');
-                main.state = 'combat';
+        const fadeout = $('#fadeout');
+        fadeout.show();
+        fadeout.animate({ opacity: '1.0' }, {
+            duration: 1000,
+            done: function() {
+                $('#game').hide();
 
-                // $('#stage').detach().appendTo('#game');
+                // Populate .options
+                for (name in main.combatants) {
+                    const combatant = main.combatants[name];
+                    $(`<div class="enemy-option" id="${combatant.id}">`).append(
+                        $(`<img src="assets/images/${name}.png">`)
+                    ).appendTo('.options');
+                };
+                // Your opponent, you must choose to .display
+                $('.display').text('Yoda: Choose your opponent, you must.');
+
+                //fade back 
+                fadeout.animate({ opacity: '0' }, {
+                    duration: 1000,
+                    done: fadeout.hide.bind(fadeout)
+                })
             }
 
+        });
     }
+    // case 'opponent select':
+    //     if ($(this).attr('value') != main.char) {
+    //         main.enemy = $(this).attr('value');
+
+    //         $(this).detach().removeClass('col-6 col-md-3').appendTo('#defender');
+    //         $('#message').text('Fight!');
+    //         main.state = 'combat';
+
+    //         // $('#stage').detach().appendTo('#game');
+    //     }
+
 }
 
-function attack() {
-    if (main.combatants[main.char].attackTarget(main.combatants[main.enemy])) {
-        console.log(`${main.enemy} defeated`);
-        $(`#${main.enemy.replace(' ', '')}`).remove();
-        main.state = 'opponent select';
-    } else if (main.combatants[main.char].HP <= 0) {
-        console.log('You lose');
-    }
-    $(`#${main.char.replace(' ', '')}>.card-body>.card-text`).text(main.combatants[main.char].HP);
-    $(`#${main.enemy.replace(' ', '')}>.card-body>.card-text`).text(main.combatants[main.enemy].HP);
-}
+
+// Leftover from before the pokemon battle
+// function attack() {
+//     if (main.combatants[main.char].attackTarget(main.combatants[main.enemy])) {
+//         console.log(`${main.enemy} defeated`);
+//         $(`#${main.enemy.replace(' ', '')}`).remove();
+//         main.state = 'opponent select';
+//     } else if (main.combatants[main.char].HP <= 0) {
+//         console.log('You lose');
+//     }
+//     $(`#${main.char.replace(' ', '')}>.card-body>.card-text`).text(main.combatants[main.char].HP);
+//     $(`#${main.enemy.replace(' ', '')}>.card-body>.card-text`).text(main.combatants[main.enemy].HP);
+// }
 
 function updateDisplay() {
     if (displayBuffer[0]) {
@@ -78,7 +114,7 @@ function updateDisplay() {
         $('.battle-menu').hide();
         $('.battle-display').css(
             'cursor', 'pointer').text(
-                next.text); // Buffer should be no more than a few lines
+            next.text); // Buffer should be no more than a few lines
         if (next.animation) {
             next.animation();
         }
@@ -96,17 +132,17 @@ function updateHpBar(who, pctHP) { //who is 'player' or 'enemy'
     hpBar.animate({
         'width': pctHP * 85 + "%"
     }, {
-            step: (number, tween) => {
-                if (number >= 85 * .5) {
-                    hpBar.css('background', 'green');
-                } else if (number >= 85 * .25) {
-                    hpBar.css('background', 'gold');
-                } else {
-                    hpBar.css('background', 'firebrick');
-                }
-            },
-            duration: 700
-        });
+        step: (number, tween) => {
+            if (number >= 85 * .5) {
+                hpBar.css('background', 'green');
+            } else if (number >= 85 * .25) {
+                hpBar.css('background', 'gold');
+            } else {
+                hpBar.css('background', 'firebrick');
+            }
+        },
+        duration: 700
+    });
 }
 
 function defeatAnimation(who) {
@@ -116,7 +152,7 @@ function defeatAnimation(who) {
         'top': '100%',
         'height': '50%',
         'easing': jQuery.easing.easeInQuint // from easing library
-    }, 700, function () {
+    }, 700, function() {
         sprite.remove();
     });
 }
@@ -136,7 +172,7 @@ function cut(who, blinks) {
     $('.cut .path>.line').animate({
         width: '100%',
         easing: 'linear'
-    }, 400, function () {
+    }, 400, function() {
         blink(who, blinks);
         cut.remove();
     });
@@ -156,7 +192,7 @@ function doubleCut(who) {
     $('.cut-back .path>.line').animate({
         width: '100%',
         easing: 'linear',
-    }, 400, function () {
+    }, 400, function() {
         animation.remove();
         cut(who, 2);
     });
@@ -288,17 +324,17 @@ function thunder(who) {
             duration: 100,
             easing: 'linear',
             step: tweenInvert,
-            done: function () {
+            done: function() {
                 $({ invert: 0 }).animate({ invert: 100 }, {
                     duration: 100,
                     easing: 'linear',
                     step: tweenInvert,
-                    done: function () {
+                    done: function() {
                         $({ invert: 100 }).animate({ invert: 0 }, {
                             duration: 100,
                             easing: 'linear',
                             step: tweenInvert,
-                            done: function () {
+                            done: function() {
                                 img.css({
                                     filter: 'invert(0%)'
                                 })
@@ -355,37 +391,40 @@ function shutter() {
     const top = $('<div class="shutter" id="top-shutter">').appendTo('#game-screen');
     const bot = $('<div class="shutter" id="bottom-shutter">').appendTo('#game-screen');
 
+    top.fadeIn(100);
+    bot.fadeIn(100);
+    top.fadeIn(100);
+    bot.fadeIn(100);
+
+
     $('.shutter').addClass('rotate');
 
     // Add a callback so we get control back when the animation finishes.
-    $('#top-shutter').one('animationend', function () {
+    $('#top-shutter').one('animationend', function() {
         console.log('debug');
     })
-
-
-
 }
 
 
 
 const displayBuffer = [];
 
-$(document).ready(function () {
+$(document).ready(function() {
     main.initialize();
 
-    main.char = main.combatants["Obi Wan"];
-    main.enemy = main.combatants["Darth Maul"];
+    //main.char = main.combatants["Obi Wan"];
+    //main.enemy = main.combatants["Darth Maul"];
 
 
 
     // Battle events
 
-    $('.battle-display').on('click', function () {
+    $('.battle-display').on('click', function() {
         updateDisplay();
     })
 
     // Combat logic happens here.
-    $('.battle-menu #fight').on('click', function () {
+    $('.battle-menu #fight').on('click', function() {
         const res = main.char.attackTarget(main.enemy);
         displayBuffer.push({
             text: `${main.char.name} attacks ${main.enemy.name} for ${main.char.attack * (main.char.level - 1)} damage.`,
@@ -429,32 +468,32 @@ $(document).ready(function () {
     });
 
     // Logic for the buttons that don't do anything
-    $('.battle-menu #jedi').on('click', function () {
+    $('.battle-menu #jedi').on('click', function() {
         displayBuffer.push({ text: 'You have no other Jedi!' });
         updateDisplay();
     });
 
-    $('.battle-menu #item').on('click', function () {
-        displayBuffer.push({ text: 'Yoda: This isn\'t the time to use that!' });
+    $('.battle-menu #item').on('click', function() {
+        displayBuffer.push({ text: 'Yoda: The time to use that this isn\'t !' });
         updateDisplay();
     });
 
-    $('.battle-menu #run').on('click', function () {
+    $('.battle-menu #run').on('click', function() {
         displayBuffer.push({ text: 'You can\'t run from a Jedi battle!' });
         updateDisplay();
     });
 
-    $('.cut').on('mouseover', function () {
-        $('.cut .star8').animate({
-            bottom: '-17',
-            left: '-17',
-            easing: 'linear'
-        }, 400);
-        $('.cut .path>.line').animate({
-            width: '100%',
-            easing: 'linear'
-        }, 400);
-    })
+    // $('.cut').on('mouseover', function() {
+    //     $('.cut .star8').animate({
+    //         bottom: '-17',
+    //         left: '-17',
+    //         easing: 'linear'
+    //     }, 400);
+    //     $('.cut .path>.line').animate({
+    //         width: '100%',
+    //         easing: 'linear'
+    //     }, 400);
+    // })
 
 
 
