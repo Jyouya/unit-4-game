@@ -80,6 +80,14 @@ body {
     grid-row-start: 1;
 }
 
+.sprite img {
+    position: relative;
+    z-index: 0;
+    object-fit: cover;
+    width: 100%;
+    object-position: 0 0;
+}
+
 .battle-display {
     grid-row-start: 4;
     grid-column-start: 1;

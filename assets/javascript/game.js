@@ -406,7 +406,24 @@ function shutter() {
     })
 }
 
+// takes two fighter objects, returns nothing
+function setupBattle(player, enemy) {
+    // Probably need to reset some styles for the health bars
+    const enemyStats = $('.stats.enemy');
+    $('.stats.enemy .name').text(enemy.name);
+    $('.stats.enemy .level').text(`Lv${Math.floor(Math.random() * 5) + 5}`);
 
+    $('.sprite.enemy').empty();
+    $('.sprite.enemy').append(`<img src="assets/images/${enemy.name}.png">`);
+
+    $('.stats.player .name').text(player.name);
+    $('.stats.player .level').text(`Lv${player.level}`);
+    $('.stats.player .hp-value').text(`${player.HP} / ${player.maxHP}`);
+
+    $('.sprite.player').empty();
+    $('.sprite.player').append(`<img src="assets/images/${player.name}.png">`);
+
+}
 
 const displayBuffer = [];
 
@@ -426,9 +443,13 @@ $(document).ready(function() {
         delete main.combatants[main.enemy.name];
         main.state = 'battle';
 
-        //Shutter transition
+        //Shutter transition 
+        //TODO shutter goes the wrong way.  Should close to black screen
+        // then battle sprites slide past eachother to get into position
+
 
         $('.enemy-select').hide();
+        setupBattle(main.char, main.enemy);
         $('.battle').show();
 
     });
