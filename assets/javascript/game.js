@@ -3,9 +3,9 @@ let combatants; // Dictionary of combatant names and fighter objects
 const main = {
     initialize() {
         this.combatants = { // fill combatants with a fresh array of fighters when we initialize
-            "Obi Wan": new Fighter("Obi Wan", 120, 8, 20, cut, ['I\'s over Anakin, I have the high ground.']),
+            "Obi Wan": new Fighter("Obi Wan", 120, 10, 20, cut, ['I\'s over Anakin, I have the high ground.']),
             "Darth Maul": new Fighter("Darth Maul", 180, 4, 25, doubleCut, ['At last we will reveal ourselves to the Jedi.', 'At last we will have revenge.']),
-            "Luke Skywalker": new Fighter("Luke Skywalker", 100, 15, 14, cut, ['You\'re gravely mistaken, you won’t convert me as you did my father.']),
+            "Luke Skywalker": new Fighter("Luke Skywalker", 100, 15, 13, cut, ['You\'re gravely mistaken, you won’t convert me as you did my father.']),
             "Darth Sidious": new Fighter("Darth Sidious", 150, 7, 15, thunder, ['Did you ever hear the Tragedy of Darth Plagueis the wise?', 'I thought not. It\'s not a story the Jedi would tell you.'])
         };
         this.state = 'character select';
@@ -577,6 +577,18 @@ $(document).ready(function() {
                     });
                 });
                 //TODO put GameOver logic here
+                displayBuffer.push({
+                    text: '',
+                    animation: () => {
+                        $('.battle').fadeOut(200);
+                        $('<div id="game-over">').append(
+                            $('<div style="flex-grow: 0; margin: auto;">').append(
+                                $('<h1>').text('Defeated'),
+                                $('<h2>').text('Click to play again'),
+                            )
+                        ).appendTo('#game-screen').on('click', fadeToStart);
+                    }
+                })
             }
         } else {
             displayBuffer.push({
