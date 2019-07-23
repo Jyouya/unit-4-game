@@ -10,7 +10,7 @@ const main = {
         };
         this.state = 'character select';
 
-        const stage = $('#stage');
+        const stage = $('#stage').empty();
         for (const name in this.combatants) {
             stage.append(makeCard(this.combatants[name]));
             console.log(this.combatants[name].id);
@@ -24,6 +24,12 @@ const main = {
                 }
                 </style>`);
         }
+
+        $('#game').show();
+        $('.stats.enemy .hp-bar-inner').css({
+            width: "85%",
+            background: "green",
+        })
 
         $('#game').on('click', '.fighter', cardListener);
 
@@ -112,7 +118,7 @@ function afterBattle() { // redraw opponent selection after a battle
     $('.display').text('Yoda: Choose your opponent, you must.');
 
     //fade back 
-    $('#game-fade').fadeOut(1000).promise().then( () => {
+    $('#game-fade').fadeOut(1000).promise().then(() => {
         console.log('fadeout');
         $('#game-fade').remove();
     });
@@ -442,10 +448,30 @@ function shutter(resolve) {
     $('#top-shutter').one('animationend', resolve);
 }
 
+function fadeToStart() {
+    main.state = 'game over'
+    const fadeout = $('#fadeout');
+    fadeout.show();
+    fadeout.animate({ opacity: '1.0' }, 1000).promise().then(() => {
+        $('#game-over').remove();
+        $('.v-center').hide();
+        main.initialize();
+        fadeout.animate({ opacity: '0' }, 1000).promise().then(
+            fadeout.hide.bind(fadeout)
+        ).then( () => {
+            main.state = 'character select';
+        });
+    })
+}
+
 // takes two fighter objects, returns nothing
 function setupBattle(player, enemy) {
-    // Probably need to reset some styles for the health bars
-    const enemyStats = $('.stats.enemy');
+    // const enemyStats = $('.stats.enemy');
+    $('.stats.enemy .hp-bar-inner').css({
+        width: "85%",
+        background: "green",
+    })
+
     $('.stats.enemy .name').text(enemy.name);
     $('.stats.enemy .level').text(`Lv${Math.floor(Math.random() * 5) + 5}`);
 
@@ -481,7 +507,9 @@ $(document).ready(function () {
 
         //Flashes, radial swipes, fades back in, sprites slide into place
         new Promise(shutter).then(() => {
-            $('.shutter').fadeOut(500);
+            $('.shutter').fadeOut(500).promise().then(() => {
+                $('.shutter').remove();
+            });
             $('.enemy-select').hide();
             $('.options').empty();
 
@@ -503,8 +531,6 @@ $(document).ready(function () {
                 // Executes when the entire animation is finished  
             })
         });
-
-
     });
 
 
@@ -563,9 +589,19 @@ $(document).ready(function () {
             displayBuffer.push({
                 text: '',
                 animation: () => {
-                    main.state = 'opponent select';
-                    //$('.shutter').fadeIn(300).fadeOut(300).fadeIn(300).fadeOut(300); // Flashes while spinning.  Kinda cool, but not what I want
-                    $('<div id="game-fade">').hide().appendTo('#game-screen').fadeIn(1000).promise().then( afterBattle );
+                    if (Object.keys(main.combatants).length) {
+                        main.state = 'opponent select';
+                        //$('.shutter').fadeIn(300).fadeOut(300).fadeIn(300).fadeOut(300); // Flashes while spinning.  Kinda cool, but not what I want
+                        $('<div id="game-fade">').hide().appendTo('#game-screen').fadeIn(1000).promise().then(afterBattle);
+                    } else {
+                        $('.battle').hide();
+                        $('<div id="game-over">').append(
+                            $('<div style="flex-grow: 0; margin: auto;">').append(
+                                $('<h1>').text('You have Won!'),
+                                $('<h2>').text('Click to play again'),
+                            )
+                        ).appendTo('#game-screen').on('click', fadeToStart);
+                    }
                 }
             });
         }
