@@ -606,7 +606,7 @@ $(document).ready(function() {
                         //$('.shutter').fadeIn(300).fadeOut(300).fadeIn(300).fadeOut(300); // Flashes while spinning.  Kinda cool, but not what I want
                         $('<div id="game-fade">').hide().appendTo('#game-screen').fadeIn(1000).promise().then(afterBattle);
                     } else {
-                        $('.battle').hide();
+                        $('.battle').fadeOut(200);
                         $('<div id="game-over">').append(
                             $('<div style="flex-grow: 0; margin: auto;">').append(
                                 $('<h1>').text('Won, have you!'),
