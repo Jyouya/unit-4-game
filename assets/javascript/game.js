@@ -14,6 +14,7 @@ const main = {
         for (const name in this.combatants) {
             stage.append(makeCard(this.combatants[name]));
             console.log(this.combatants[name].id);
+            // Add styles for enemy select to the stylesheet
             $('head').append(`<style>
                 #${this.combatants[name].id}.enemy-option:hover:before{
                     content: "${name}";
@@ -48,7 +49,7 @@ function cardListener(event) {
     //     case 'character select':
 
     if (main.state == 'character select') {
-        main.char = main.combatants[$(this).attr('value')];;
+        main.char = main.combatants[$(this).attr('value')];
         delete main.combatants[main.char.name]; // take our character out of the combatants array and put it on main.char
         $(this).remove();
         main.state = 'opponent select';
@@ -64,7 +65,7 @@ function cardListener(event) {
                 // Populate .options
                 for (name in main.combatants) {
                     const combatant = main.combatants[name];
-                    $(`<div class="enemy-option" id="${combatant.id}">`).append(
+                    $(`<div class="enemy-option" id="${combatant.id}" value="${name}">`).append(
                         $(`<img src="assets/images/${name}.png">`)
                     ).appendTo('.options');
                 };
@@ -415,6 +416,24 @@ $(document).ready(function() {
     //main.char = main.combatants["Obi Wan"];
     //main.enemy = main.combatants["Darth Maul"];
 
+    // Enemy Select events
+
+    $('#game-screen').on('click', '.enemy-option', function() {
+        // Don't accept clicks during transitions
+        if (main.state != 'opponent select') return;
+        console.log($(this).attr('value'));
+        main.enemy = main.combatants[$(this).attr('value')];
+        delete main.combatants[main.enemy.name];
+        main.state = 'battle';
+
+        //Shutter transition
+
+        $('.enemy-select').hide();
+        $('.battle').show();
+
+    });
+
+
 
 
     // Battle events
@@ -435,7 +454,7 @@ $(document).ready(function() {
                 main.char.attackAnimation('enemy');
             }
         });
-        if (res) {
+        if (res) { // if enemy survived and counterattacked
             displayBuffer.push({
                 text: `${main.enemy.name} counterattacks for ${res} damage.`,
                 animation: () => {
